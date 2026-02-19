@@ -14,7 +14,10 @@ def process_dev_data(chunk_size=1000000):
     # File paths
     h5_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\raw data\N-CMAPSS_DS02-006.h5'
     parquet_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\healthy state\inference_results.parquet'
-    output_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\health_index\mamba2_processed.parquet'
+    output_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\RUL\mamba2_processed.parquet'
+    
+    # Ensure output directory exists
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     print(f"\n[DEV] Processing RUL data in chunks of {chunk_size}...")
 
@@ -172,9 +175,15 @@ def process_dev_data(chunk_size=1000000):
         # 4. Xs columns
         xs_cols = ['T24', 'T30', 'T48', 'T50', 'P15', 'P2', 'P21', 'P24', 'Ps30', 'P40', 'P50', 'Nf', 'Nc', 'Wf']
         
-        # 5. Parquet columns
+        # 5. Parquet columns (Residuals)
         pq_cols = list(df_parquet.columns)
         
+        # VALIDATION: Check for 14 residuals (New Architecture)
+        if len(pq_cols) != 14:
+            print(f"WARNING: Expected 14 residual columns (X only), found {len(pq_cols)}: {pq_cols}")
+        else:
+            print(f"[DEV] Confirmed 14 residual columns consistent with new architecture.")
+
         # 6. RUL column (New, replaces T_dev)
         rul_col = ['RUL']
         
@@ -299,7 +308,10 @@ def process_test_data(chunk_size=1000000):
     # File paths
     h5_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\raw data\N-CMAPSS_DS02-006.h5'
     parquet_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\healthy state\inference_results_TEST.parquet'
-    output_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\health_index\mamba2_processed_TEST.parquet'
+    output_path = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\RUL\mamba2_processed_TEST.parquet'
+    
+    # Ensure output directory exists
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     print(f"\n[TEST] Processing TEST data in chunks of {chunk_size}...")
 
@@ -381,8 +393,8 @@ def process_test_data(chunk_size=1000000):
         # Total steps per cycle
         df_rul['total_steps'] = df_rul.groupby(['unit', 'cycle'])['step'].transform('count')
         
-        # Use Raw RUL but apply CLIPPING as requested
-        print("[TEST] Using Raw RUL with Clipping at 73.0...")
+        # Calculate Continuous RUL (Consistent with Dev) -> REVERTED: User requested RAW RUL
+        print("[TEST] Using RAWW RUL (clipped at 73) as requested...")
         # df_rul['RUL_continuous'] = df_rul['RUL_raw'] + 1.0 - (df_rul['step'] / df_rul['total_steps'])
         
         # Clip RUL at 73
@@ -455,6 +467,12 @@ def process_test_data(chunk_size=1000000):
         pq_cols = list(df_parquet.columns)
         # remove unit/cycle from list if they are in df_parquet (we handle them)
         pq_cols = [c for c in pq_cols if c not in ['unit', 'cycle']]
+        
+        # VALIDATION: Check for 14 residuals
+        if len(pq_cols) != 14:
+             print(f"WARNING: Expected 14 residual columns (X only), found {len(pq_cols)}: {pq_cols}")
+        else:
+             print(f"[TEST] Confirmed 14 residual columns consistent with new architecture.")
         
         # 6. RUL column (New, replaces T_dev)
         rul_col = ['RUL']

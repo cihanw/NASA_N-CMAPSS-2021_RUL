@@ -4,14 +4,14 @@ import numpy as np
 import os
 
 # --- ORTAK AYARLAR ---
-INPUT_PATH = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\healthy state\inference_results.parquet'
+INPUT_PATH = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\RUL\mamba2_processed.parquet'
 
 # 1. Kodun Ayarları (Health Index)
-OUTPUT_DIR_HI = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\healthy state\health_index_plots'
+OUTPUT_DIR_HI = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\RUL\health_index_plots'
 SMOOTH_WINDOW = 20
 
 # 2. Kodun Ayarları (Ortalama Sensör Grafikleri)
-OUTPUT_DIR_AVG = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\healthy state\average_sensor_plots'
+OUTPUT_DIR_AVG = r'c:\Users\Bilge\OneDrive\Masaüstü\N-CMAPSS RUL\RUL\average_sensor_plots'
 
 def plot_composite_health_index(df):
     """
